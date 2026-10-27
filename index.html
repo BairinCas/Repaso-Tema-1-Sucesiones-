@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación de Matemáticas - 2do BGU | U.E.P. La Providencia</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- KaTeX para Matemáticas -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
+
+    <!-- Header Institucional -->
+    <header class="bg-[#1A365D] text-white shadow-md border-b-4 border-[#D69E2E]">
+        <div class="max-w-4xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-4 text-center sm:text-left">
+                <!-- Escudo Oficial Base64 -->
+                <div class="w-16 h-16 bg-white rounded-full p-1 shadow-inner flex items-center justify-center shrink-0 overflow-hidden">
+                    <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAASABIBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=" alt="Escudo La Providencia" id="logo-img" class="w-full h-full object-contain">
+                </div>
+                <div>
+                    <h1 class="text-xs uppercase tracking-wider text-[#D69E2E] font-bold">Unidad Educativa Particular</h1>
+                    <h2 class="text-lg font-extrabold tracking-tight">"La Providencia" - Azogues</h2>
+                    <p class="text-xs text-slate-300">Departamento de Matemáticas • 2do BGU</p>
+                </div>
+            </div>
+            <div id="timer-box" class="hidden bg-slate-800/80 px-4 py-2 rounded-lg border border-slate-600 text-center">
+                <span class="text-xs text-slate-400 block">Tiempo Restante</span>
+                <span id="time-left" class="text-lg font-mono font-bold text-[#D69E2E]">15:00</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenedor Principal -->
+    <main class="max-w-3xl w-full mx-auto px-4 py-8 flex-grow">
+
+        <!-- 1. PANTALLA DE REGISTRO -->
+        <section id="view-register" class="bg-white rounded-2xl shadow-xl p-6 sm:p-8 border border-slate-100">
+            <div class="text-center max-w-lg mx-auto mb-6">
+                <span class="bg-blue-50 text-[#1A365D] text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">Repaso General del Capítulo</span>
+                <h3 class="text-2xl font-bold text-slate-900 mt-2">Sucesiones, Monotonía y Progresiones (PA - PG)</h3>
+                <p class="text-sm text-slate-600 mt-2 leading-relaxed">
+                    Estimado/a estudiante, esta actividad consta de <strong class="text-[#1A365D]">5 preguntas de razonamiento</strong> enfocadas en los temas antes mencionados. Se le recuerda que dispone de un único intento y que abandonar o cambiar de ventana en el navegador cerrará la evaluación de forma automática con una calificación de 0.00 puntos.
+                </p>
+            </div>
+
+            <form id="form-register" class="space-y-4 max-w-md mx-auto">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Apellidos y Nombres Completos</label>
+                    <input type="text" id="student-name" required placeholder="Ej. Pérez Cárdenas Juan Carlos" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-[#1A365D] focus:border-transparent outline-none transition">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Paralelo</label>
+                    <select id="student-parallel" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-[#1A365D] focus:border-transparent outline-none transition bg-white">
+                        <option value="">Seleccione su paralelo...</option>
+                        <option value="2do BGU A">2do BGU "A"</option>
+                        <option value="2do BGU B">2do BGU "B"</option>
+                        <option value="2do BGU C">2do BGU "C"</option>
+                        <option value="2do BGU D">2do BGU "D"</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full mt-6 bg-[#1A365D] hover:bg-blue-900 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 shadow-lg shadow-blue-900/20">
+                    Comenzar Evaluación
+                </button>
+            </form>
+        </section>
+
+        <!-- 2. PANTALLA DE BLOQUEO / SEGURIDAD -->
+        <section id="view-blocked" class="hidden bg-white rounded-2xl shadow-xl p-8 text-center border border-slate-100 max-w-lg mx-auto">
+            <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">!</div>
+            <h3 class="text-2xl font-bold text-slate-900 mb-2">Acceso Restringido / Intento Finalizado</h3>
+            <p id="blocked-reason" class="text-slate-600 mb-6">Se ha registrado un intento previo o una infracción a las normas de seguridad de la evaluación.</p>
+            <div id="previous-result-card" class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-left mb-6 hidden">
+                <p class="text-xs text-slate-500 uppercase font-semibold">Registro del estudiante:</p>
+                <p class="font-medium text-slate-800"><span id="prev-name"></span> - <span id="prev-parallel"></span></p>
+                <p class="text-lg font-bold text-[#1A365D] mt-1">Calificación: <span id="prev-score"></span> / 10.00</p>
+            </div>
+            <!-- Botón exclusivo para desarrollo/pruebas locales (puedes quitarlo antes de subir al host final) -->
+            <button onclick="localStorage.removeItem('providencia_math_exam'); location.reload();" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-2 px-6 rounded-lg transition text-sm">
+                🔄 Limpiar registro y reiniciar (Modo Pruebas)
+            </button>
+        </section>
+
+        <!-- 3. PANTALLA DE EXAMEN -->
+        <section id="view-quiz" class="hidden space-y-6">
+            <!-- Barra de Progreso -->
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
+                <div>
+                    <span id="quiz-topic-badge" class="bg-blue-100 text-[#1A365D] text-xs font-semibold px-2.5 py-1 rounded-md">Tema</span>
+                    <h4 class="text-sm font-medium text-slate-600 mt-1">Pregunta <span id="current-q-num">1</span> de 5</h4>
+                </div>
+                <div class="w-36 bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                    <div id="progress-bar" class="bg-[#D69E2E] h-full transition-all duration-300" style="width: 20%"></div>
+                </div>
+            </div>
+
+            <!-- Tarjeta de Pregunta -->
+            <div class="bg-white rounded-2xl shadow-xl p-6 sm:p-8 border border-slate-100">
+                <div id="question-text" class="text-lg font-semibold text-slate-900 mb-6 leading-relaxed">
+                    <!-- Texto de pregunta inyectado -->
+                </div>
+                <div id="options-container" class="space-y-3">
+                    <!-- Opciones inyectadas -->
+                </div>
+            </div>
+
+            <!-- Botones de Navegación -->
+            <div class="flex justify-between items-center pt-2">
+                <button id="btn-prev" onclick="prevQuestion()" class="px-5 py-2.5 bg-white border border-slate-300 text-slate-700 font-medium rounded-lg hover:bg-slate-50 transition shadow-sm disabled:opacity-40 disabled:cursor-not-allowed">
+                    Anterior
+                </button>
+                <button id="btn-next" onclick="nextQuestion()" class="px-6 py-2.5 bg-[#1A365D] text-white font-medium rounded-lg hover:bg-blue-900 transition shadow-md">
+                    Siguiente Pregunta
+                </button>
+            </div>
+        </section>
+
+        <!-- 4. PANTALLA DE RESULTADOS Y RETROALIMENTACIÓN -->
+        <section id="view-results" class="hidden space-y-6">
+            <div class="bg-white rounded-2xl shadow-xl p-6 sm:p-8 border border-slate-100 text-center">
+                <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">✓</div>
+                <h3 class="text-2xl font-bold text-slate-900">¡Evaluación Finalizada con Éxito!</h3>
+                <p class="text-slate-600 mt-1">Sus respuestas han sido registradas institucionalmente.</p>
+                
+                <div class="my-6 p-6 bg-slate-50 rounded-2xl border border-slate-200 max-w-md mx-auto">
+                    <span class="text-xs uppercase tracking-wider font-semibold text-slate-500">Calificación Final</span>
+                    <div class="text-4xl font-extrabold text-[#1A365D] my-2"><span id="final-score-val">0.00</span> <span class="text-lg font-medium text-slate-400">/ 10.00</span></div>
+                    <span id="qualitative-badge" class="inline-block px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-[#1A365D]">Aprobado</span>
+                </div>
+
+                <div class="text-left border-t border-slate-200 pt-6 mt-6">
+                    <h4 class="font-bold text-slate-900 mb-3 text-lg">Resumen de Dominio por Temas</h4>
+                    <div id="topic-mastery-cards" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <!-- Tarjetas de dominio inyectadas -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Solucionario Detallado -->
+            <div class="bg-white rounded-2xl shadow-xl p-6 sm:p-8 border border-slate-100">
+                <h4 class="text-lg font-bold text-slate-900 mb-4">Solucionario Razonado (Saber, Saber Hacer y Saber Ser)</h4>
+                <div id="solucionario-container" class="space-y-4">
+                    <!-- Solucionario inyectado -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500">
+        <p>Unidad Educativa Particular "La Providencia" • Azogues, Ecuador © 2026</p>
+    </footer>
+
+    <!-- Script institucional -->
+    <script>
+        const masterQuestionBank = [
+            // --- SUCESIONES Y MONOTONÍA ---
+            {
+                id: 1, topic: "Sucesiones y Monotonía",
+                text: "Un estudiante decide llevar una cuenta de ahorros mensual siguiendo la relación $a_n = 4n + 6$. Al aplicar el criterio de la resta para analizar su monotonía ($a_{n+1} - a_n$), ¿cuál es la conclusión técnica correcta?",
+                options: [
+                    "Es estrictamente creciente pues $(4(n+1)+6) - (4n+6) = 4 > 0$",
+                    "Es estrictamente decreciente pues la resta resulta en $-4 < 0$",
+                    "Es constante ya que la resta da como resultado $0$",
+                    "No es monótona porque depende del valor que tome $n$",
+                    "Es oscilante debido al término constante $+6$"
+                ],
+                correct: 0,
+                explanation: "<strong>Saber:</strong> Aplicación del criterio de la resta.<br><strong>Saber Hacer:</strong> $(4n + 10) - (4n + 6) = 4$. Al ser positivo ($4 > 0$), la sucesión es estrictamente creciente.<br><strong>Saber Ser:</strong> Demuestra disciplina y constancia en la planificación financiera personal."
+            },
+            {
+                id: 2, topic: "Sucesiones y Monotonía",
+                text: "El valor comercial en dólares de un equipo tecnológico de la institución se deprecia anualmente según la regla $d_n = 860 - 60n$. ¿Qué comportamiento demuestra analíticamente el criterio de la resta?",
+                options: [
+                    "Es estrictamente decreciente porque $d_{n+1} - d_n = -60 < 0$",
+                    "Es estrictamente creciente porque la diferencia da $+60 > 0$",
+                    "Es no monótona porque el valor del equipo se estabiliza",
+                    "Es oscilante alternando entre ganancias y pérdidas",
+                    "Es constante a partir del segundo año"
+                ],
+                correct: 0,
+                explanation: "<strong>Saber:</strong> Criterio de monotonía decreciente.<br><strong>Saber Hacer:</strong> $d_{n+1} - d_n = (860 - 60(n+1)) - (860 - 60n) = -60$. Al ser menor a $0$, es estrictamente decreciente.<br><strong>Saber Ser:</strong> Promueve la valoración del cuidado de los bienes institucionales y tecnológicos."
+            },
+            {
+                id: 3, topic: "Sucesiones y Monotonía",
+                text: "Dada la sucesión definida por la ley de recurrencia $a_1 = 3$ y $a_n = 2a_{n-1} + 1$ para $n \\ge 2$, determine el valor del cuarto término ($a_4$).",
+                options: ["$31$", "$15$", "$29$", "$25$", "$33$", "$16$"],
+                correct: 0,
+                explanation: "<strong>Saber:</strong> Sucesiones recurrentes.<br><strong>Saber Hacer:</strong> $a_1 = 3$; $a_2 = 2(3)+1 = 7$; $a_3 = 2(7)+1 = 15$; $a_4 = 2(15)+1 = 31$.<br><strong>Saber Ser:</strong> Fomenta el rigor secuencial y el cálculo estructurado en la resolución de problemas."
+            },
+
+            // --- PROGRESIONES ARITMÉTICAS ---
+            {
+                id: 4, topic: "Progresiones Aritméticas",
+                text: "Para una competencia de pista, se colocan 4 obstáculos equidistantes entre el punto de salida ($a_1 = 5\\text{ m}$) y la meta ($a_6 = 35\\text{ m}$). ¿Cuál es la diferencia común $d$ o razón entre obstáculo y obstáculo?",
+                options: ["$6\\text{ m}$", "$5\\text{ m}$", "$7\\text{ m}$", "$4\\text{ m}$", "$8\\text{ m}$"],
+                correct: 0,
+                explanation: "<strong>Saber:</strong> Interpolación de términos en una PA.<br><strong>Saber Hacer:</strong> Usamos $r = \\frac{a_n - a_1}{n - 1} = \\frac{35 - 5}{6 - 1} = \\frac{30}{5} = 6\\text{ m}$.<br><strong>Saber Ser:</strong> Valora el sentido de equidad, orden y precisión en las reglas de competencia."
+            },
+            {
+                id: 5, topic: "Progresiones Aritméticas",
+                text: "Un comité estudiantil organiza una recolección solidaria donde el 1er mes reúnen $20$, el 2do mes $35$, el 3er mes $50$, aumentando en PA. ¿Cuánto dinero habrán acumulado en total ($S_{10}$) al finalizar 10 meses?",
+                options: ["$875$", "$850$", "$900$", "$825$", "$950$"],
+                correct: 0,
+                explanation: "<strong>Saber:</strong> Sumatoria parcial de una PA.<br><strong>Saber Hacer:</strong> $a_{10} = 20 + 9(15) = 155$. Luego $S_{10} = \\frac{10(20 + 155)}{2} = 5(175) = 875$.<br><strong>Saber Ser:</strong> Estimula la solidaridad y el trabajo colaborativo en beneficio de la comunidad."
+            },
+            {
+                id: 6, topic: "Progresiones Aritméticas",
+                text: "En una progresión aritmética, el término vigésimo es $a_{20} = 101$ y la diferencia común es $d = 3$. Halle el valor del primer término $a_1$.",
+                options: ["$44$", "$41$", "$47$", "$50$", "$38$"],
+                correct: 0,
+                explanation: "<strong>Saber:</strong> Despeje del primer término en una PA.<br><strong>Saber Hacer:</strong> $a_{20} = a_1 + 19d \\implies 101 = a_1 + 19(3) \\implies a_1 = 101 - 57 = 44$.<br><strong>Saber Ser:</strong> Aplica la perseverancia algebraica en la verificación de datos."
+            },
+
+            // --- PROGRESIONES GEOMÉTRICAS ---
+            {
+                id: 7, topic: "Progresiones Geométricas",
+                text: "Un balón se deja caer desde una altura de $20\\text{ metros}$ y rebota alcanzando siempre el $60\\%$ ($r = 0.6$) de la altura anterior. ¿Cuál es la altura que alcanza tras el quinto rebote ($a_5$)?",
+                options: ["$2.592\\text{ m}$", "$4.32\\text{ m}$", "$1.555\\text{ m}$", "$3.24\\text{ m}$", "$2.16\\text{ m}$"],
+                correct: 0,
+                explanation: "<strong>Saber:</strong> Progresión geométrica decreciente.<br><strong>Saber Hacer:</strong> $a_5 = a_1 \\cdot r^{5-1} = 20 \\cdot (0.6)^4 = 20 \\cdot 0.1296 = 2.592\\text{ m}$.<br><strong>Saber Ser:</strong> Fomenta la comprensión de modelos de atenuación física y análisis del entorno."
+            },
+            {
+                id: 8, topic: "Progresiones Geométricas",
+                text: "En una cadena de difusión comunitaria, un líder comunica un mensaje a 4 personas (Nivel 1). Cada una lo transmite a 4 más (Nivel 2) y así sucesivamente. ¿Cuántas personas reciben la información en total en los 5 primeros niveles ($S_5$)?",
+                options: ["$1364$", "$1023$", "$341$", "$1365$", "$1024$"],
+                correct: 0,
+                explanation: "<strong>Saber:</strong> Suma de $n$ términos en una PG ($r=4$).<br><strong>Saber Hacer:</strong> $S_5 = \\frac{4(4^5 - 1)}{4 - 1} = \\frac{4(1024 - 1)}{3} = \\frac{4092}{3} = 1364$.<br><strong>Saber Ser:</strong> Desarrolla la conciencia crítica sobre la rapidez con la que se difunde la información en redes."
+            },
+            {
+                id: 9, topic: "Progresiones Geométricas",
+                text: "En una progresión geométrica de términos positivos, se conoce que el tercer término es $a_3 = 12$ y el sexto término es $a_6 = 96$. ¿Cuál es la razón común $r$?",
+                options: ["$2$", "$3$", "$4$", "$\\frac{1}{2}$", "$\\sqrt{2}$"],
+                correct: 0,
+                explanation: "<strong>Saber:</strong> Relación entre términos discontinuos en una PG.<br><strong>Saber Hacer:</strong> $a_6 = a_3 \\cdot r^3 \\implies 96 = 12 \\cdot r^3 \\implies r^3 = 8 \\implies r = 2$.<br><strong>Saber Ser:</strong> Potencia el pensamiento lógico y la deducción estructurada."
+            },
+            {
+                id: 10, topic: "Progresiones Geométricas",
+                text: "Un urbanizador construye 1 casa el primer año, 2 el segundo, 4 el tercero, duplicando cada año. ¿Cuántas casas habrá construido en TOTAL al finalizar el año 10 ($S_{10}$)?",
+                options: ["$1023$", "$1024$", "$511$", "$2047$", "$999$"],
+                correct: 0,
+                explanation: "<strong>Saber:</strong> Crecimiento acumulado en PG.<br><strong>Saber Hacer:</strong> $a_1 = 1$, $r = 2$, $n = 10$. $S_{10} = \\frac{1(2^{10} - 1)}{2 - 1} = 1023$.<br><strong>Saber Ser:</strong> Valora la visión emprendedora apoyada en cálculos de factibilidad matemática."
+            }
+        ];
+
+        let selectedQuestions = [];
+        let currentIdx = 0;
+        let userAnswers = {};
+        let studentData = {};
+        let examTimer = null;
+        let timeLeftSeconds = 900;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            checkExistingSession();
+            
+            document.getElementById('form-register').addEventListener('submit', (e) => {
+                e.preventDefault();
+                startExam();
+            });
+
+            // Anti-cheat activo según las instrucciones institucionales
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden && document.getElementById('view-quiz').classList.contains('hidden') === false) {
+                    triggerCheatLock("Has abandonado la pestaña o minimizado el navegador.");
+                }
+            });
+
+            window.addEventListener('blur', () => {
+                if (document.getElementById('view-quiz').classList.contains('hidden') === false) {
+                    triggerCheatLock("Se detectó pérdida de foco en la ventana del examen.");
+                }
+            });
+        });
+
+        function checkExistingSession() {
+            const saved = localStorage.getItem('providencia_math_exam');
+            if (saved) {
+                const data = JSON.parse(saved);
+                document.getElementById('view-register').classList.add('hidden');
+                document.getElementById('view-blocked').classList.remove('hidden');
+                document.getElementById('prev-name').textContent = data.name;
+                document.getElementById('prev-parallel').textContent = data.parallel;
+                document.getElementById('prev-score').textContent = data.score.toFixed(2);
+                if (data.cheated) {
+                    document.getElementById('blocked-reason').textContent = "Intento bloqueado e invalidado por infracción de seguridad (salida de la ventana/pestaña detectada). Calificación: 0.00 puntos.";
+                }
+            }
+        }
+
+        function startExam() {
+            const name = document.getElementById('student-name').value.trim();
+            const parallel = document.getElementById('student-parallel').value;
+
+            if (!name || !parallel) return;
+
+            studentData = { name, parallel };
+
+            let shuffled = [...masterQuestionBank].sort(() => 0.5 - Math.random());
+            selectedQuestions = shuffled.slice(0, 5);
+
+            document.getElementById('view-register').classList.add('hidden');
+            document.getElementById('view-quiz').classList.remove('hidden');
+            document.getElementById('timer-box').classList.remove('hidden');
+
+            startTimer();
+            renderQuestion();
+        }
+
+        function startTimer() {
+            examTimer = setInterval(() => {
+                timeLeftSeconds--;
+                let m = Math.floor(timeLeftSeconds / 60);
+                let s = timeLeftSeconds % 60;
+                document.getElementById('time-left').textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                
+                if (timeLeftSeconds <= 0) {
+                    clearInterval(examTimer);
+                    finishExam(true);
+                }
+            }, 1000);
+        }
+
+        function renderQuestion() {
+            const q = selectedQuestions[currentIdx];
+            document.getElementById('current-q-num').textContent = currentIdx + 1;
+            document.getElementById('quiz-topic-badge').textContent = q.topic;
+            document.getElementById('progress-bar').style.width = `${((currentIdx + 1) / 5) * 100}%`;
+
+            document.getElementById('question-text').innerHTML = q.text;
+
+            const optsContainer = document.getElementById('options-container');
+            optsContainer.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const isChecked = userAnswers[currentIdx] === idx ? 'checked' : '';
+                const borderClass = isChecked ? 'border-[#1A365D] bg-blue-50/50' : 'border-slate-200 hover:bg-slate-50';
+                
+                const div = document.createElement('label');
+                div.className = `flex items-center p-4 rounded-xl border ${borderClass} cursor-pointer transition shadow-sm`;
+                div.innerHTML = `
+                    <input type="radio" name="q_option" value="${idx}" ${isChecked} class="w-4 h-4 text-[#1A365D] focus:ring-[#1A365D]" onchange="selectOption(${idx})">
+                    <span class="ml-3 text-slate-700 font-medium">${opt}</span>
+                `;
+                optsContainer.appendChild(div);
+            });
+
+            document.getElementById('btn-prev').disabled = currentIdx === 0;
+            const nextBtn = document.getElementById('btn-next');
+            if (currentIdx === 4) {
+                nextBtn.textContent = "Finalizar Evaluación";
+                nextBtn.className = "px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition shadow-md";
+            } else {
+                nextBtn.textContent = "Siguiente Pregunta";
+                nextBtn.className = "px-6 py-2.5 bg-[#1A365D] hover:bg-blue-900 text-white font-medium rounded-lg transition shadow-md";
+            }
+
+            if (window.renderMathInElement) {
+                renderMathInElement(document.body, {
+                    delimiters: [{left: "$$", right: "$$", display: true}, {left: "$", right: "$", display: false}],
+                    throwOnError: false
+                });
+            }
+        }
+
+        function selectOption(idx) {
+            userAnswers[currentIdx] = idx;
+            renderQuestion();
+        }
+
+        function prevQuestion() {
+            if (currentIdx > 0) {
+                currentIdx--;
+                renderQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            if (currentIdx < 4) {
+                currentIdx++;
+                renderQuestion();
+            } else {
+                finishExam(false);
+            }
+        }
+
+        function triggerCheatLock(reason) {
+            if (document.getElementById('view-results').classList.contains('hidden') === false) return;
+            clearInterval(examTimer);
+
+            const record = {
+                name: studentData.name || "Estudiante",
+                parallel: studentData.parallel || "N/A",
+                score: 0.00,
+                cheated: true,
+                date: new Date().toISOString()
+            };
+            localStorage.setItem('providencia_math_exam', JSON.stringify(record));
+
+            document.getElementById('view-quiz').classList.add('hidden');
+            document.getElementById('view-register').classList.add('hidden');
+            document.getElementById('view-blocked').classList.remove('hidden');
+            document.getElementById('blocked-reason').textContent = `Infracción detectada: ${reason}. Su evaluación ha sido cerrada y calificada con 0.00 puntos por incumplimiento de las normas.`;
+            document.getElementById('previous-result-card').classList.remove('hidden');
+            document.getElementById('prev-name').textContent = record.name;
+            document.getElementById('prev-parallel').textContent = record.parallel;
+            document.getElementById('prev-score').textContent = "0.00 (Anulado)";
+        }
+
+        function finishExam(isTimeout) {
+            clearInterval(examTimer);
+
+            let correctCount = 0;
+            selectedQuestions.forEach((q, i) => {
+                if (userAnswers[i] === q.correct) correctCount++;
+            });
+
+            const finalScore = correctCount * 2.0;
+
+            const record = {
+                name: studentData.name,
+                parallel: studentData.parallel,
+                score: finalScore,
+                cheated: false,
+                date: new Date().toISOString()
+            };
+            localStorage.setItem('providencia_math_exam', JSON.stringify(record));
+
+            document.getElementById('view-quiz').classList.add('hidden');
+            document.getElementById('view-results').classList.remove('hidden');
+            document.getElementById('timer-box').classList.add('hidden');
+
+            document.getElementById('final-score-val').textContent = finalScore.toFixed(2);
+
+            const badge = document.getElementById('qualitative-badge');
+            if (finalScore >= 9) {
+                badge.textContent = "Sobresaliente (A)";
+                badge.className = "inline-block px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800";
+            } else if (finalScore >= 7) {
+                badge.textContent = "Satisfactorio (AR)";
+                badge.className = "inline-block px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-[#1A365D]";
+            } else if (finalScore >= 5) {
+                badge.textContent = "Próximo a alcanzar (PAAR)";
+                badge.className = "inline-block px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800";
+            } else {
+                badge.textContent = "No alcanza (NAAR)";
+                badge.className = "inline-block px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800";
+            }
+
+            let topicStats = {};
+            selectedQuestions.forEach((q, i) => {
+                if (!topicStats[q.topic]) topicStats[q.topic] = { total: 0, correct: 0 };
+                topicStats[q.topic].total++;
+                if (userAnswers[i] === q.correct) topicStats[q.topic].correct++;
+            });
+
+            const masteryContainer = document.getElementById('topic-mastery-cards');
+            masteryContainer.innerHTML = '';
+            for (let topic in topicStats) {
+                const st = topicStats[topic];
+                const pct = Math.round((st.correct / st.total) * 100);
+                const card = document.createElement('div');
+                card.className = "p-4 rounded-xl border border-slate-200 bg-white shadow-sm";
+                card.innerHTML = `
+                    <h5 class="font-semibold text-slate-800 text-sm mb-1">${topic}</h5>
+                    <p class="text-xs text-slate-500">Aciertos: ${st.correct} de ${st.total}</p>
+                    <div class="mt-2 w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                        <div class="bg-[#1A365D] h-full" style="width: ${pct}%"></div>
+                    </div>
+                `;
+                masteryContainer.appendChild(card);
+            }
+
+            const solContainer = document.getElementById('solucionario-container');
+            solContainer.innerHTML = '';
+            selectedQuestions.forEach((q, i) => {
+                const userAnsIdx = userAnswers[i];
+                const isCorrect = userAnsIdx === q.correct;
+                const userAnsText = userAnsIdx !== undefined ? q.options[userAnsIdx] : "Sin responder";
+                const correctText = q.options[q.correct];
+
+                const item = document.createElement('div');
+                item.className = `p-4 rounded-xl border ${isCorrect ? 'border-emerald-200 bg-emerald-50/30' : 'border-red-200 bg-red-50/30'}`;
+                item.innerHTML = `
+                    <div class="flex items-start justify-between gap-2">
+                        <h5 class="font-bold text-slate-900 text-sm">Pregunta ${i+1}: <span class="font-normal text-slate-700">${q.text}</span></h5>
+                        <span class="px-2.5 py-0.5 rounded text-xs font-semibold shrink-0 ${isCorrect ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}">${isCorrect ? 'Correcta (+2.0)' : 'Incorrecta (0.0)'}</span>
+                    </div>
+                    <div class="mt-3 text-xs space-y-1 text-slate-600">
+                        <p><strong>Tu respuesta:</strong> ${userAnsText}</p>
+                        <p><strong>Respuesta correcta:</strong> ${correctText}</p>
+                        <div class="mt-2 text-slate-700 bg-white p-3 rounded-lg border border-slate-200 leading-relaxed">${q.explanation}</div>
+                    </div>
+                `;
+                solContainer.appendChild(item);
+            });
+
+            if (window.renderMathInElement) {
+                renderMathInElement(document.body, {
+                    delimiters: [{left: "$$", right: "$$", display: true}, {left: "$", right: "$", display: false}],
+                    throwOnError: false
+                });
+            }
+        }
+    </script>
+</body>
+</html>
